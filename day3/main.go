@@ -73,45 +73,120 @@ func parseInput(input string) []string {
 		currentSequence += char
 	}
 
-	fmt.Println(list)
 	return list
 }
 
-func firstTask(data []string) int {
-	var total int = 0
-	for _, item := range data {
-		if !strings.Contains(item, "mul") || !strings.Contains(item, "(") || !strings.Contains(item, ")") || !strings.Contains(item, ",") {
+func parseInputDay2(input string) []string {
+	// Example of correct data for parsing mul(5,10)
+	// 1. Should start at every m letter
+	// 2. Should end if some of the next letters are not u, l, (, number, ",", number, )
+	// 3. Should return a list of the numbers
+
+	var len = len(input)
+	var allowedLetters = []string{"m", "u", "l", "(", ")", ",", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "d", "o", "'", "n", "t"}
+	var currentWorkingIndex = 0
+	var currentSequence = ""
+
+	var listOfSequences []string
+
+	for i := 0; i < len; i++ {
+		// Start collecting different sequences
+		// All sequences should start with do, don't or mui
+		// All sequences should with )
+
+		var char = string(input[i])
+		var isValidChar = includes(allowedLetters, char)
+		var isStartChar = char == "d" || char == "m"
+		var isEndChar = char == ")"
+
+		if !isValidChar {
+			currentWorkingIndex = 0
+			currentSequence = ""
 			continue
 		}
-		var removedMul = strings.Replace(item, "mul", "", 1);
-		var removedBrackets = strings.Replace(removedMul, "(", "", 1);
-		var removeEndBrackets = strings.Replace(removedBrackets, ")", "", 1);
-		var split = strings.Split(removeEndBrackets, ",")
-		fmt.Println(item, split)
-		var first, _ = strconv.Atoi(split[0])
-		var second, _ = strconv.Atoi(split[1])
+
+		if isStartChar {
+			currentSequence = char
+			currentWorkingIndex = 0
+			continue
+		}
+
+		if isEndChar {
+			currentSequence += char
+			currentWorkingIndex = 0
+			listOfSequences = append(listOfSequences, currentSequence)
+			currentSequence = ""
+			continue
+		}
+
+		currentWorkingIndex++
+		currentSequence += char
+	}
+
+	// Check if letter is in the list
+	// If not break the current sequence and start over until you find the next m
+
+	return listOfSequences
+}
+
+func parseMulItem(item string) (int, int) {
+	if !strings.Contains(item, "mul") || !strings.Contains(item, "(") || !strings.Contains(item, ")") || !strings.Contains(item, ",") {
+		return 0,0
+	}
+	var removedMul = strings.Replace(item, "mul", "", 1)
+	var removedBrackets = strings.Replace(removedMul, "(", "", 1)
+	var removeEndBrackets = strings.Replace(removedBrackets, ")", "", 1)
+	var split = strings.Split(removeEndBrackets, ",")
+	var first, _ = strconv.Atoi(split[0])
+	var second, _ = strconv.Atoi(split[1])
+	return first, second
+}
+
+func firstTask(data string) int {
+	var list []string = parseInput(data)
+	var total int = 0
+	for _, item := range list {
+		first, second := parseMulItem(item)
 		total += first * second
 	}
 
-	return total;
+	return total
 }
 
-func secondTask(data [][]int) int {
-	return 0
+func secondTask(data string) int {
+	var list []string = parseInputDay2(data)
+	var total int = 0
+
+	var enableCalculation = true
+
+	for _, item := range list {
+		if strings.Contains(item, "don't") {
+			enableCalculation = false
+			continue
+		}
+
+		if(strings.Contains(item, "do")) {
+			enableCalculation = true
+			continue
+		}
+
+		if !enableCalculation {
+			continue
+		}
+
+		first, second := parseMulItem(item)
+		total += first * second
+	}
+
+	return total
 }
 
 func main() {
 	var data string = getData("data")
-	var list []string = parseInput(data)
 
-	var firstTaskResult = firstTask(list)
-	// var secondTaskResult = secondTask(list)
-
-	// if(firstTaskResult != 161) {
-	// 	fmt.Println(`Task 1`, firstTaskResult, `Expected 161`)
-	// 	panic("First task failed")
-	// }
+	var firstTaskResult = firstTask(data)
+	var secondTaskResult = secondTask(data)
 
 	fmt.Println(`Task 1`, firstTaskResult)
-	// fmt.Println(`Task 2`, secondTaskResult)
+	fmt.Println(`Task 2`, secondTaskResult)
 }
