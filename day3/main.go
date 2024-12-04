@@ -27,7 +27,6 @@ func parseInput(input string) []string {
 	// Example of correct data for parsing mul(5,10)
 	// 1. Should start at every m letter
 	// 2. Should end if some of the next letters are not u, l, (, number, ",", number, )
-	// 3. Should return a list of the numbers
 
 	var len = len(input)
 	var allowedLetters = []string{"m", "u", "l", "(", ")", ",", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
@@ -77,11 +76,6 @@ func parseInput(input string) []string {
 }
 
 func parseInputDay2(input string) []string {
-	// Example of correct data for parsing mul(5,10)
-	// 1. Should start at every m letter
-	// 2. Should end if some of the next letters are not u, l, (, number, ",", number, )
-	// 3. Should return a list of the numbers
-
 	var len = len(input)
 	var allowedLetters = []string{"m", "u", "l", "(", ")", ",", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "d", "o", "'", "n", "t"}
 	var currentWorkingIndex = 0
@@ -122,9 +116,6 @@ func parseInputDay2(input string) []string {
 		currentWorkingIndex++
 		currentSequence += char
 	}
-
-	// Check if letter is in the list
-	// If not break the current sequence and start over until you find the next m
 
 	return listOfSequences
 }
